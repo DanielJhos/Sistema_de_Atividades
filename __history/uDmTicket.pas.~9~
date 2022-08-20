@@ -1,0 +1,38 @@
+unit uDmTicket;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, Data.FMTBcd, Data.DB, Data.SqlExpr,
+  Datasnap.DBClient, Datasnap.Provider, uDmConexao, FireDAC.Stan.Intf,
+  FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
+  FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+
+type
+  TdsAtividade = class(TDataModule)
+    sqlPesquisar: TFDQuery;
+    sqlAlterar: TFDQuery;
+    sqlInserir: TFDQuery;
+    sqlDeletar: TFDQuery;
+    sqlPesquisarcod_atvd: TIntegerField;
+    sqlPesquisartit_atvd: TWideStringField;
+    sqlPesquisardesc_atvd: TWideStringField;
+    sqlPesquisartp_atvd: TWideStringField;
+    DataSource1: TDataSource;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  dsAtividade: TdsAtividade;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+{$R *.dfm}
+
+end.

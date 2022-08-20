@@ -1,0 +1,32 @@
+unit uDmTicket;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, Data.FMTBcd, Data.DB, Data.SqlExpr,
+  Datasnap.DBClient, Datasnap.Provider, uDmConexao;
+
+type
+  TdsTicket = class(TDataModule)
+    sqlPesquisar: TSQLDataSet;
+    sqlInserir: TSQLDataSet;
+    sqlAlterar: TSQLDataSet;
+    sqlExcluir: TSQLDataSet;
+    dsPesquisar: TDataSetProvider;
+    cdsPesquisar: TClientDataSet;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  dsTicket: TdsTicket;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+{$R *.dfm}
+
+end.

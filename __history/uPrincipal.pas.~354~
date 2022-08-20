@@ -1,0 +1,339 @@
+unit uPrincipal;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.Menus, Vcl.Buttons,
+  Data.DB, Vcl.StdCtrls, Vcl.DBCtrls, Vcl.Mask, Vcl.Grids, Vcl.DBGrids,
+  Vcl.ComCtrls, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
+  FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
+  uDmConexao;
+
+type
+    TfrmPrincipal = class(TForm)
+    Label1: TLabel;
+    dbgFiltrar: TDBGrid;
+    btnNovo: TButton;
+    btnExcluir: TButton;
+    pnlRodape: TPanel;
+    pgcPrincipal: TPageControl;
+    tbFiltrar: TTabSheet;
+    tbDados: TTabSheet;
+    pnlFiltrar: TPanel;
+    btnFiltrar: TButton;
+    dsCadastrar: TDataSource;
+    memoDesc: TDBMemo;
+    Label2: TLabel;
+    pnlBtnFiltrar: TPanel;
+    btnSair: TButton;
+    Label3: TLabel;
+    Label4: TLabel;
+    cbxSituacao: TDBComboBox;
+    pnlBtnCad: TPanel;
+    btnConsultar: TButton;
+    btnListar: TButton;
+    btnAlterar: TButton;
+    btnGravar: TButton;
+    btnCancelar: TButton;
+    fdQryCadastrar: TFDQuery;
+    Label5: TLabel;
+    edtTitulo: TDBEdit;
+    lbCod: TLabel;
+    edtCodigo: TDBEdit;
+    dbrgTipoAtividade: TDBRadioGroup;
+    fdQryFiltrar: TFDQuery;
+    dsFiltrar: TDataSource;
+    edtFiltrar: TEdit;
+    cbxFiltrarAtividade: TComboBox;
+    cbxFiltrarSituacao: TComboBox;
+    Label6: TLabel;
+    fdQryCadastrarcod_atvd: TFDAutoIncField;
+    fdQryCadastrartit_atvd: TWideStringField;
+    fdQryCadastrardesc_atvd: TWideStringField;
+    fdQryCadastrarst_atvd: TWideStringField;
+    fdQryCadastrartp_atvd: TWideStringField;
+    fdQryFiltrarcod_atvd: TIntegerField;
+    fdQryFiltrartit_atvd: TWideStringField;
+    fdQryFiltrardesc_atvd: TWideStringField;
+    fdQryFiltrarst_atvd: TWideStringField;
+    fdQryFiltrartp_atvd: TWideStringField;
+    procedure btnSairClick(Sender: TObject);
+    procedure btnNovoClick(Sender: TObject);
+    procedure btnGravarClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure btnFiltrarClick(Sender: TObject);
+    procedure btnConsultarClick(Sender: TObject);
+    procedure btnListarClick(Sender: TObject);
+    procedure btnAlterarClick(Sender: TObject);
+    procedure btnCancelarClick(Sender: TObject);
+    procedure btnExcluirClick(Sender: TObject);
+    procedure pgcPrincipalChanging(Sender: TObject; var AllowChange: Boolean);
+
+  private
+  Procedure HabilitarAlterar(P:Boolean);
+  procedure NovoItem;
+  procedure GravarItem;
+  procedure FiltrarItem;
+  procedure ConsultarItem;
+  procedure ValidaDados;
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmPrincipal: TfrmPrincipal;
+
+
+implementation
+
+{$R *.dfm}
+
+procedure TfrmPrincipal.btnAlterarClick(Sender: TObject);
+begin
+  HabilitarAlterar(True);
+end;
+
+procedure TfrmPrincipal.btnCancelarClick(Sender: TObject);
+begin
+  if (fdQryCadastrar.State in [dsEdit, dsInsert]) then
+  begin
+    fdQryCadastrar.Cancel;
+    pgcPrincipal.ActivePage := tbFiltrar;
+  end;
+end;
+
+procedure TfrmPrincipal.btnConsultarClick(Sender: TObject);
+begin
+  ConsultarItem;
+  btnAlterar.Enabled := True;
+  btnListar.Enabled  := True;
+  HabilitarAlterar(False);
+end;
+
+procedure TfrmPrincipal.btnExcluirClick(Sender: TObject);
+begin
+  if Application.MessageBox('Deseja excluir o registro selecionado?',
+   'Confirmação', MB_YESNO + MB_ICONQUESTION + MB_DEFBUTTON2) = IDYES then
+  begin
+    fdQryCadastrar.Open;
+    if not (fdQryCadastrar.IsEmpty) then
+    begin
+      fdQryCadastrar.Locate('COD_ATVD', fdQryFiltrar.FieldByName('COD_ATVD').AsInteger, []);
+      fdQryCadastrar.Delete;
+      FiltrarItem;
+    end;
+  end;
+end;
+
+
+procedure TfrmPrincipal.btnFiltrarClick(Sender: TObject);
+begin
+  FiltrarItem;
+end;
+
+procedure TfrmPrincipal.btnGravarClick(Sender: TObject);
+begin
+  ValidaDados;
+  GravarItem;
+end;
+
+procedure TfrmPrincipal.btnListarClick(Sender: TObject);
+begin
+  FiltrarItem;
+end;
+
+procedure TfrmPrincipal.btnNovoClick(Sender: TObject);
+begin
+  NovoItem;
+end;
+
+procedure TfrmPrincipal.btnSairClick(Sender: TObject);
+begin
+  close;
+end;
+
+procedure TfrmPrincipal.ConsultarItem;
+begin
+  if not (fdQryFiltrar.IsEmpty) then
+  begin
+    pgcPrincipal.ActivePage := tbDados;
+    fdQryCadastrar.Open;
+    fdQryCadastrar.Locate('COD_ATVD', fdQryFiltrar.FieldByName('COD_ATVD').AsInteger, []);
+    if (fdQryCadastrar.FieldByName('ST_ATVD').AsString = 'A') then
+    begin
+      cbxSituacao.ItemIndex := 0;
+    end
+    else
+    begin
+      cbxSituacao.ItemIndex := 1;
+    end;
+    pgcPrincipal.Show;
+  end;
+end;
+
+procedure TfrmPrincipal.FiltrarItem;
+begin
+  if not (fdQryFiltrar.State in [dsEdit, dsInsert]) then
+  begin
+    pgcPrincipal.ActivePage := tbFiltrar;
+    fdQryFiltrar.Close;
+    fdQryFiltrar.SQL.Clear;
+    fdQryFiltrar.SQL.Add('SELECT '+
+                        ' COD_ATVD,'+
+                        ' TIT_ATVD,'+
+                        ' DESC_ATVD,'+
+                        ' ST_ATVD,'+
+                        ' TP_ATVD FROM ATIVIDADE');
+    fdQryFiltrar.SQL.Add(' WHERE 1 = 1');
+
+    if (edtFiltrar.Text <> '') then
+    begin
+      fdQryFiltrar.SQL.Add(' AND UPPER(TRIM(TIT_ATVD)) LIKE ' + QuotedStr('%' + UpperCase(Trim(edtFiltrar.Text)) + '%'));
+    end;
+
+    case cbxFiltrarAtividade.ItemIndex of
+      0:
+      begin
+        fdQryFiltrar.SQL.Add(' AND TP_ATVD = ''A''');
+      end;
+      1:
+      begin
+        fdQryFiltrar.SQL.Add(' AND TP_ATVD = ''D''');
+      end;
+      2:
+      begin
+        fdQryFiltrar.SQL.Add(' AND TP_ATVD = ''M''');
+      end;
+      3:
+      begin
+        fdQryFiltrar.SQL.Add(' AND TP_ATVD = ''U''');
+      end;
+    end;
+    fdQryFiltrar.Open;
+
+    case cbxFiltrarSituacao.ItemIndex of
+      0:
+      begin
+        fdQryFiltrar.SQL.Add(' AND ST_ATVD = ''A''');
+      end;
+      1:
+      begin
+        fdQryFiltrar.SQL.Add(' AND ST_ATVD = ''C''');
+      end;
+    end;
+    fdQryFiltrar.Open;
+
+    if fdQryFiltrar.IsEmpty then
+    begin
+      btnConsultar.Enabled := False;
+      btnExcluir.Enabled   := False;
+    end
+    else
+    begin
+      btnConsultar.Enabled := True;
+      btnExcluir.Enabled   := True;
+    end;
+    end;
+end;
+
+procedure TfrmPrincipal.FormCreate(Sender: TObject);
+begin
+  pgcPrincipal.ActivePage := tbFiltrar;
+end;
+
+procedure TfrmPrincipal.GravarItem;
+begin
+  fdQryCadastrar.Open;
+  if (cbxSituacao.Text = 'Aberto') then
+  begin
+    fdQryCadastrar.FieldByName('ST_ATVD').asString := 'A';
+  end
+  else
+  if (cbxSituacao.Text = 'Concluído') then
+  begin
+    fdQryCadastrar.FieldByName('ST_ATVD').asString := 'C'
+  end;
+
+  fdQryCadastrar.FieldByName('TIT_ATVD').asString := edtTitulo.Text;
+  fdQryCadastrar.FieldByName('DESC_ATVD').asString := memoDesc.Text;
+  fdQryCadastrar.Post;
+  fdQryCadastrar.Close;
+  pgcPrincipal.ActivePage := tbFiltrar;
+  FiltrarItem;
+end;
+
+procedure TfrmPrincipal.HabilitarAlterar(P: Boolean);
+begin
+  edtTitulo.Enabled         := P;
+  memoDesc.Enabled          := P;
+  cbxSituacao.Enabled       := P;
+  dbrgTipoAtividade.Enabled := P;
+end;
+
+procedure TfrmPrincipal.NovoItem;
+begin
+  pgcPrincipal.ActivePage := tbDados;
+
+  if not (fdQryCadastrar.State in dsEditModes) then
+  begin
+    fdQryCadastrar.Open;
+    fdQryCadastrar.Insert;
+  end;
+end;
+
+procedure TfrmPrincipal.pgcPrincipalChanging(Sender: TObject;
+  var AllowChange: Boolean);
+begin
+//Quando estou cadastrando não permite a troca de abas
+  if (fdQryCadastrar.State in dsEditModes) then
+  begin
+    ShowMessage('Termine de Cadastrar o chamado');
+    AllowChange := False;
+    Exit;
+  end;
+//Quando estou consultando não permite a troca de abas
+  if (pgcPrincipal.ActivePage = tbFiltrar) then
+  begin
+    ShowMessage('Cadastre ou Consulte um chamado');
+    AllowChange := False;
+  end;
+  if (pgcPrincipal.ActivePage = tbDados) then
+  begin
+    ShowMessage('Filtre novamente');
+    AllowChange := False;
+  end;
+end;
+
+procedure TfrmPrincipal.ValidaDados;
+begin
+  if Trim(edtTitulo.Text) = '' then
+  begin
+    raise Exception.Create('Informe um título válido');
+    edtTitulo.SetFocus;
+  end;
+
+  if memoDesc.Text = '' then
+  begin
+    raise Exception.Create('Informe uma descrição válida');
+    memoDesc.SetFocus;
+  end;
+
+  if cbxSituacao.Text = '' then
+  begin
+    raise Exception.Create('Informe uma situação válida');
+    cbxSituacao.SetFocus;
+  end;
+
+  if dbrgTipoAtividade.Value = '' then
+  begin
+    raise Exception.Create('Informe um tipo de atividade válido');
+    dbrgTipoAtividade.SetFocus;
+  end;
+
+end;
+
+end.
+

@@ -1,0 +1,18 @@
+program Sistema;
+
+uses
+  Vcl.Forms,
+  uPrincipal in 'uPrincipal.pas' {frmPrincipal},
+  Vcl.Themes,
+  Vcl.Styles,
+  uAtividades in 'uAtividades.pas' {frmAtividade};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TfrmPrincipal, frmPrincipal);
+  Application.CreateForm(TfrmAtividade, frmAtividade);
+  Application.Run;
+end.

@@ -1,0 +1,37 @@
+object dsTicket: TdsTicket
+  OldCreateOrder = False
+  Height = 574
+  Width = 738
+  object sqlPesquisar: TSQLDataSet
+    Params = <>
+    Left = 88
+    Top = 88
+  end
+  object sqlInserir: TSQLDataSet
+    Params = <>
+    Left = 144
+    Top = 88
+  end
+  object sqlAlterar: TSQLDataSet
+    Params = <>
+    Left = 200
+    Top = 88
+  end
+  object sqlExcluir: TSQLDataSet
+    Params = <>
+    Left = 256
+    Top = 88
+  end
+  object dsPesquisar: TDataSetProvider
+    DataSet = sqlPesquisar
+    Left = 88
+    Top = 160
+  end
+  object cdsPesquisar: TClientDataSet
+    Aggregates = <>
+    Params = <>
+    ProviderName = 'dsPesquisar'
+    Left = 88
+    Top = 224
+  end
+end

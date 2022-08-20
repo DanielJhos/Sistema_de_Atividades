@@ -1,0 +1,20 @@
+program Sistema;
+
+uses
+  Vcl.Forms,
+  uPrincipal in 'uPrincipal.pas' {frmPrincipal},
+  Vcl.Themes,
+  Vcl.Styles,
+  uDmConexao in 'uDmConexao.pas' {dmConexao: TDataModule},
+  uDmTicket in 'uDmTicket.pas' {dsTicket: TDataModule};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TfrmPrincipal, frmPrincipal);
+  Application.CreateForm(TdmConexao, dmConexao);
+  Application.CreateForm(TdsTicket, dsTicket);
+  Application.Run;
+end.

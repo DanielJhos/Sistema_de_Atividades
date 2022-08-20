@@ -1,0 +1,40 @@
+object dsTicket: TdsTicket
+  OldCreateOrder = False
+  Height = 574
+  Width = 738
+  object dsPesquisar: TDataSetProvider
+    DataSet = cdsPesquisar
+    AfterApplyUpdates = dsPesquisarAfterApplyUpdates
+    Left = 88
+    Top = 168
+  end
+  object cdsPesquisar: TClientDataSet
+    Aggregates = <>
+    Params = <>
+    ProviderName = 'dsPesquisar'
+    Left = 88
+    Top = 224
+  end
+  object sqlPesquisar: TFDQuery
+    Connection = dmConexao.FDConnection
+    SQL.Strings = (
+      'SELECT COD_ATVD, TIT_ATVD, DESC_ATVD, TP_ATVD FROM ATIVIDADE')
+    Left = 88
+    Top = 104
+  end
+  object sqlAlterar: TFDQuery
+    Connection = dmConexao.FDConnection
+    Left = 200
+    Top = 104
+  end
+  object sqlInserir: TFDQuery
+    Connection = dmConexao.FDConnection
+    Left = 144
+    Top = 104
+  end
+  object sqlDeletar: TFDQuery
+    Connection = dmConexao.FDConnection
+    Left = 256
+    Top = 104
+  end
+end

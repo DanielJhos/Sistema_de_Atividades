@@ -1,0 +1,59 @@
+object dsAtividade: TdsAtividade
+  OldCreateOrder = False
+  Height = 574
+  Width = 738
+  object dsPesquisar: TDataSetProvider
+    DataSet = cdsPesquisar
+    Left = 88
+    Top = 168
+  end
+  object cdsPesquisar: TClientDataSet
+    Aggregates = <>
+    Params = <>
+    ProviderName = 'dsPesquisar'
+    Left = 88
+    Top = 224
+  end
+  object sqlPesquisar: TFDQuery
+    Connection = dmConexao.FDConnection
+    SQL.Strings = (
+      'SELECT COD_ATVD, TIT_ATVD, DESC_ATVD, TP_ATVD FROM ATIVIDADE')
+    Left = 88
+    Top = 104
+    object sqlPesquisarcod_atvd: TIntegerField
+      FieldName = 'cod_atvd'
+      Origin = 'cod_atvd'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+    end
+    object sqlPesquisartit_atvd: TWideStringField
+      FieldName = 'tit_atvd'
+      Origin = 'tit_atvd'
+      Size = 50
+    end
+    object sqlPesquisardesc_atvd: TWideStringField
+      FieldName = 'desc_atvd'
+      Origin = 'desc_atvd'
+      Size = 255
+    end
+    object sqlPesquisartp_atvd: TWideStringField
+      FieldName = 'tp_atvd'
+      Origin = 'tp_atvd'
+      Size = 1
+    end
+  end
+  object sqlAlterar: TFDQuery
+    Connection = dmConexao.FDConnection
+    Left = 200
+    Top = 104
+  end
+  object sqlInserir: TFDQuery
+    Connection = dmConexao.FDConnection
+    Left = 144
+    Top = 104
+  end
+  object sqlDeletar: TFDQuery
+    Connection = dmConexao.FDConnection
+    Left = 256
+    Top = 104
+  end
+end

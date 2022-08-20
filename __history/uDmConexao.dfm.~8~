@@ -1,0 +1,21 @@
+object dmConexao: TdmConexao
+  OldCreateOrder = False
+  Height = 392
+  Width = 708
+  object FDConnection: TFDConnection
+    Params.Strings = (
+      'Server=LOCALHOST'
+      'User_Name=postgres'
+      'Database=DELPHI'
+      'Password=36217900'
+      'DriverID=PG')
+    Connected = True
+    Left = 312
+    Top = 56
+  end
+  object FDPhysPgDriverLink: TFDPhysPgDriverLink
+    VendorLib = 'E:\Delphi\DelphiAvan'#231'ado\Design Sistema\lib\libpq.dll'
+    Left = 424
+    Top = 56
+  end
+end
